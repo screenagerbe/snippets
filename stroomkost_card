@@ -1,6 +1,6 @@
-## Use this card to show the electricity costs from Nordpool or ENTSOE in a nice graphic 
+## Use this card to show the electricity costs from Nordpool or ENTSO-e in an apexchart
 ##
-## Requirements: HACS  + Nordpool/ENTSO-e integration + apexcharts-card (https://github.com/RomRider/apexcharts-card)
+## Requirements: HACS + Nordpool/ENTSO-e integration + apexcharts-card (https://github.com/RomRider/apexcharts-card)
 ##
 
 type: custom:apexcharts-card
