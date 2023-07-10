@@ -1,0 +1,66 @@
+## Use this card to show the electricity costs from Nordpool or ENTSOE in a nice graphic 
+##
+## Requirements: HACS  + Nordpool/ENTSO-e integration + apexcharts-card (https://github.com/RomRider/apexcharts-card)
+##
+
+type: custom:apexcharts-card
+graph_span: 24h
+span:
+  start: day
+now:
+  show: true
+  label: Now
+header:
+  show: true
+  title: Nordpool-prijzen Vandaag (€/kwh)
+series:
+  - entity: sensor.nordpool_kwh_be_eur_5_10_0
+    name: Zonder kosten
+    stroke_width: 2
+    float_precision: 5
+    type: column
+    opacity: 1
+    color: yellow
+    data_generator: |
+      return entity.attributes.raw_today.map((start, index) => {
+        return [new Date(start["start"]).getTime(), entity.attributes.raw_today[index]["value"]];
+      });
+  - entity: sensor.nordpool_kwh_be_eur_5_10_0
+    name: Met kost
+    stroke_width: 2
+    float_precision: 5
+    type: column
+    opacity: 1
+    color: ''
+    data_generator: |
+      return entity.attributes.raw_today.map((start, index) => {
+        const s = {"distributiekosten": 0.078700,
+          "transportkosten": 0.011500,
+          "fed_accijns": 0.0144160,
+          "energiebijdrage": 0.0020417,
+          "groenestroom_wkk": 0.025440,
+          "VAT": 1.06}
+        return [new Date(start["start"]).getTime(), (entity.attributes.raw_today[index]["value"] * s.VAT + s.distributiekosten + s.transportkosten + s.fed_accijns + s.energiebijdrage + s.groenestroom_wkk)];
+      });
+  - entity: sensor.nordpool_kwh_be_eur_5_10_0
+    name: Met marge
+    stroke_width: 2
+    float_precision: 5
+    type: column
+    opacity: 1
+    color: ''
+    data_generator: |
+      return entity.attributes.raw_today.map((start, index) => {
+        const s = {"distributiekosten": 0.078700, 
+          "transportkosten": 0.011500,
+          "fed_accijns": 0.0144160,
+          "energiebijdrage": 0.0020417,
+          "groenestroom_wkk": 0.025440,
+          "VAT": 1.06,
+          "marge": 0.002040}
+        return [new Date(start["start"]).getTime(), ((entity.attributes.raw_today[index]["value"] + s.marge) * s.VAT + s.distributiekosten + s.transportkosten + s.fed_accijns + s.energiebijdrage + s.groenestroom_wkk)];
+      });
+yaxis:
+  - min: 0
+    decimals: 4
+    align_to: 0.1
